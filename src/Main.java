@@ -9,6 +9,10 @@ public class Main {
         try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/opdrachtdatabase", "root", "Admin123!");
 
+            Statement matchStatement = connection.createStatement();
+
+            matchStatement.executeUpdate("DELETE FROM `match`");
+
             Statement registrationStatement = connection.createStatement();
 
             ResultSet registrationResultSet = registrationStatement.executeQuery("SELECT * FROM registrations");
@@ -16,8 +20,6 @@ public class Main {
             Statement vacanciesStatement = connection.createStatement();
 
             ResultSet vacancyResultSet = vacanciesStatement.executeQuery("SELECT * FROM vacancies");
-
-            // loop door alle registrations heen. vergelijk elk registration veld met de bijbehorende vacancyvelden
 
             ArrayList<Registration> registrations = new ArrayList<Registration>();
 
@@ -39,42 +41,41 @@ public class Main {
 
             }
 
-            // vergelijk registrations met vacancies. maak een match aan met een percentage van de match.
-            // voeg deze toe aan de matchtabel en schrijf de registration en vacancy weg uit de database
-
             for (Registration reg : registrations) {
-
-                // System.out.println("Region of reg is " + reg.region);
 
                 for (Vacancy vac : vacancies) {
 
-                    // System.out.println("Region of vac is " + vac.region);
-                    System.out.println("reg: " + reg.region + " - " + " vac: " + vac.region);
+                    int matchPercentage = 0;
 
                     if (vac.region.equalsIgnoreCase(reg.region)) {
 
                         System.out.println("Region is the same!");
-                        int matchPercentage += 20;
+                        matchPercentage += 25;
 
                     }
 
                     if (vac.industry.equalsIgnoreCase(reg.industry)) {
 
                         System.out.println("Industry is the same!");
-                        int matchPercentage += 20;
+                        matchPercentage += 25;
 
                     }
 
                     if (vac.jobPosition.equalsIgnoreCase(reg.jobPosition)) {
 
                         System.out.println("Job position is the same!");
-                        int matchPercentage += 20;
+                        matchPercentage += 25;
 
                     }
 
-                    if (vac.) {
+                    if (reg.desiredSalary < vac.endSalary && reg.desiredSalary > vac.startSalary) {
+
+                        System.out.println("Desired salary is inbetween start salary and end salary!");
+                        matchPercentage += 25;
 
                     }
+
+                    matchStatement.executeUpdate("INSERT INTO `match` (vacancyID,registrationID,percentage) VALUES (" + vac.vacancyID + ", " + reg.registrationID + ", " + matchPercentage + ");");
 
                 }
 
